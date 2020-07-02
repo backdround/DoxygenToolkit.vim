@@ -447,15 +447,15 @@ function! <SID>DoxygenLicenseFunc()
   endif
   mark d
   let l:date = strftime("%Y")
-  exec "normal O".strpart( s:startCommentBlock, 0, 1 )
-  exec "normal A".strpart( s:startCommentBlock, 1 ).substitute( g:DoxygenToolkit_licenseTag, "\<enter>", "\<enter>".s:interCommentBlock, "g" )
+  exec "normal! O".strpart( s:startCommentBlock, 0, 1 )
+  exec "normal! A".strpart( s:startCommentBlock, 1 ).substitute( g:DoxygenToolkit_licenseTag, "\<enter>", "\<enter>".s:interCommentBlock, "g" )
   if( s:endCommentBlock != "" )
-    exec "normal o".s:endCommentBlock
+    exec "normal! o".s:endCommentBlock
   endif
   if( g:DoxygenToolkit_licenseTag == s:licenseTag )
-    exec "normal %jA".l:date." - ".g:DoxygenToolkit_authorName
+    exec "normal! %jA".l:date." - ".g:DoxygenToolkit_authorName
   endif
-  exec "normal `d"
+  exec "normal! `d"
 
   call s:RestoreParameters()
 endfunction
@@ -482,19 +482,19 @@ function! <SID>DoxygenAuthorFunc()
 
   " Begin to write skeleton
   let l:insertionMode = s:StartDocumentationBlock()
-  exec "normal ".l:insertionMode.s:interCommentTag.g:DoxygenToolkit_fileTag.l:fileName
-  exec "normal o".s:interCommentTag.g:DoxygenToolkit_briefTag_pre
+  exec "normal! ".l:insertionMode.s:interCommentTag.g:DoxygenToolkit_fileTag.l:fileName
+  exec "normal! o".s:interCommentTag.g:DoxygenToolkit_briefTag_pre
   mark d
-  exec "normal o".s:interCommentTag.g:DoxygenToolkit_authorTag.g:DoxygenToolkit_authorName
-  exec "normal o".s:interCommentTag.g:DoxygenToolkit_versionTag.g:DoxygenToolkit_versionString
+  exec "normal! o".s:interCommentTag.g:DoxygenToolkit_authorTag.g:DoxygenToolkit_authorName
+  exec "normal! o".s:interCommentTag.g:DoxygenToolkit_versionTag.g:DoxygenToolkit_versionString
   let l:date = strftime("%Y-%m-%d")
-  exec "normal o".s:interCommentTag.g:DoxygenToolkit_dateTag.l:date
+  exec "normal! o".s:interCommentTag.g:DoxygenToolkit_dateTag.l:date
   if ( g:DoxygenToolkit_endCommentTag != "" )
-    exec "normal o".s:endCommentTag
+    exec "normal! o".s:endCommentTag
   endif
 
   " Move the cursor to the rigth position
-  exec "normal `d"
+  exec "normal! `d"
 
   call s:RestoreParameters()
   startinsert!
@@ -510,19 +510,19 @@ function! <SID>DoxygenUndocumentFunc(blockTag)
   let l:search = "#ifdef " . a:blockTag
   " Save cursor position and go to the begining of the file
   mark d
-  exec "normal gg"
+  exec "normal! gg"
 
   while ( search(l:search, 'W') != 0 )
-    exec "normal O#ifndef " . g:DoxygenToolkit_undocTag
-    exec "normal j^%"
+    exec "normal! O#ifndef " . g:DoxygenToolkit_undocTag
+    exec "normal! j^%"
     if ( g:DoxygenToolkit_endCommentTag == "" )
-      exec "normal o#endif // " . g:DoxygenToolkit_undocTag 
+      exec "normal! o#endif // " . g:DoxygenToolkit_undocTag 
     else
-      exec "normal o#endif /* " . g:DoxygenToolkit_undocTag . " */"
+      exec "normal! o#endif /* " . g:DoxygenToolkit_undocTag . " */"
     endif
   endwhile
 
-  exec "normal `d"
+  exec "normal! `d"
   call s:RestoreParameters()
 endfunction
 
@@ -535,12 +535,12 @@ function! <SID>DoxygenBlockFunc()
   call s:InitializeParameters()
 
   let l:insertionMode = s:StartDocumentationBlock()
-  exec "normal ".l:insertionMode.s:interCommentTag.g:DoxygenToolkit_blockTag
+  exec "normal! ".l:insertionMode.s:interCommentTag.g:DoxygenToolkit_blockTag
   mark d
-  exec "normal o".s:interCommentTag."@{ ".s:endCommentTag
-  exec "normal o".strpart( s:startCommentTag, 0, 1 )
-  exec "normal A".strpart( s:startCommentTag, 1 )." @} ".s:endCommentTag
-  exec "normal `d"
+  exec "normal! o".s:interCommentTag."@{ ".s:endCommentTag
+  exec "normal! o".strpart( s:startCommentTag, 0, 1 )
+  exec "normal! A".strpart( s:startCommentTag, 1 )." @} ".s:endCommentTag
+  exec "normal! `d"
 
   call s:RestoreParameters()
   startinsert!
@@ -593,14 +593,14 @@ function! <SID>DoxygenCommentFunc()
   " Look for function/method/... to document
   " We look only on the first three lines!
   while( match( l:lineBuffer, l:emptyLinePattern ) != -1 && l:count < 4 )
-    exec "normal j"
+    exec "normal! j"
     let l:lineBuffer = l:lineBuffer.' '.getline( line( "." ) )
     let l:count = l:count + 1
   endwhile
   " Error message when the buffer is still empty.
   if( match( l:lineBuffer, l:emptyLinePattern ) != -1 )
     call s:WarnMsg( "Nothing to document here!" )
-    exec "normal `d" 
+    exec "normal! `d" 
     return
   endif
 
@@ -636,7 +636,7 @@ function! <SID>DoxygenCommentFunc()
       endif
       continue
     endif
-    exec "normal j"
+    exec "normal! j"
     let l:lineBuffer = l:lineBuffer.' '.getline( line( "." ))
     let l:count = l:count + 1
   endwhile
@@ -648,7 +648,7 @@ function! <SID>DoxygenCommentFunc()
     else
       call s:WarnMsg( l:readError )
     endif
-    exec "normal `d" 
+    exec "normal! `d" 
     return
   endif
 
@@ -729,27 +729,27 @@ function! <SID>DoxygenCommentFunc()
   endif
 
   " Header
-  exec "normal `d" 
+  exec "normal! `d" 
   if( g:DoxygenToolkit_blockHeader != "" )
-    exec "normal O".strpart( s:startCommentBlock, 0, 1 )
-    exec "normal A".strpart( s:startCommentBlock, 1 ).g:DoxygenToolkit_blockHeader.s:endCommentBlock
-    exec "normal `d" 
+    exec "normal! O".strpart( s:startCommentBlock, 0, 1 )
+    exec "normal! A".strpart( s:startCommentBlock, 1 ).g:DoxygenToolkit_blockHeader.s:endCommentBlock
+    exec "normal! `d" 
   endif
  
   " Brief
   if( g:DoxygenToolkit_compactOneLineDoc =~ "yes" && l:doc.returns != "yes" && len( l:doc.params ) == 0 )
     let s:compactOneLineDoc = "yes"
-    exec "normal O".strpart( s:startCommentTag, 0, 1 )
-    exec "normal A".strpart( s:startCommentTag, 1 ).g:DoxygenToolkit_briefTag_pre
+    exec "normal! O".strpart( s:startCommentTag, 0, 1 )
+    exec "normal! A".strpart( s:startCommentTag, 1 ).g:DoxygenToolkit_briefTag_pre
   else
     let s:compactOneLineDoc = "no"
     let l:insertionMode = s:StartDocumentationBlock()
-    exec "normal ".l:insertionMode.s:interCommentTag.g:DoxygenToolkit_briefTag_pre
+    exec "normal! ".l:insertionMode.s:interCommentTag.g:DoxygenToolkit_briefTag_pre
   endif
   if( l:doc.name != "None" )
-    exec "normal A".l:doc.name." "
+    exec "normal! A".l:doc.name." "
   endif
-  exec "normal A".g:DoxygenToolkit_briefTag_post
+  exec "normal! A".g:DoxygenToolkit_briefTag_post
 
   " Mark the line where the cursor will be positionned.
   mark d
@@ -762,25 +762,25 @@ function! <SID>DoxygenCommentFunc()
   endif
   for param in l:doc.templates
     if( s:insertEmptyLine == 1 )
-      exec "normal o".substitute( s:interCommentTag, "[[:blank:]]*$", "", "" )
+      exec "normal! o".substitute( s:interCommentTag, "[[:blank:]]*$", "", "" )
       let s:insertEmptyLine = 0
     endif
-    exec "normal o".s:interCommentTag.g:DoxygenToolkit_templateParamTag_pre.param.g:DoxygenToolkit_templateParamTag_post
+    exec "normal! o".s:interCommentTag.g:DoxygenToolkit_templateParamTag_pre.param.g:DoxygenToolkit_templateParamTag_post
   endfor
   for param in l:doc.params
     if( s:insertEmptyLine == 1 )
-      exec "normal o".substitute( s:interCommentTag, "[[:blank:]]*$", "", "" )
+      exec "normal! o".substitute( s:interCommentTag, "[[:blank:]]*$", "", "" )
       let s:insertEmptyLine = 0
     endif
-    exec "normal o".s:interCommentTag.g:DoxygenToolkit_paramTag_pre.param.g:DoxygenToolkit_paramTag_post
+    exec "normal! o".s:interCommentTag.g:DoxygenToolkit_paramTag_pre.param.g:DoxygenToolkit_paramTag_post
   endfor
 
   " Returned value
   if( l:doc.returns == "yes" )
     if( g:DoxygenToolkit_compactDoc != "yes" )
-      exec "normal o".substitute( s:interCommentTag, "[[:blank:]]*$", "", "" )
+      exec "normal! o".substitute( s:interCommentTag, "[[:blank:]]*$", "", "" )
     endif
-    exec "normal o".s:interCommentTag.g:DoxygenToolkit_returnTag
+    exec "normal! o".s:interCommentTag.g:DoxygenToolkit_returnTag
   endif
 
   " Exception (throw) values (cpp only)
@@ -792,10 +792,10 @@ function! <SID>DoxygenCommentFunc()
     endif
     for param in l:doc.throws
       if( s:insertEmptyLine == 1 )
-        exec "normal o".substitute( s:interCommentTag, "[[:blank:]]*$", "", "" )
+        exec "normal! o".substitute( s:interCommentTag, "[[:blank:]]*$", "", "" )
         let s:insertEmptyLine = 0
       endif
-      exec "normal o".s:interCommentTag.g:DoxygenToolkit_throwTag_pre.param.g:DoxygenToolkit_throwTag_post
+      exec "normal! o".s:interCommentTag.g:DoxygenToolkit_throwTag_pre.param.g:DoxygenToolkit_throwTag_post
     endfor
   endif
 
@@ -803,20 +803,20 @@ function! <SID>DoxygenCommentFunc()
   if( s:endCommentTag != "" )
     if( s:compactOneLineDoc =~ "yes" )
       let s:execCommand = "A"
-      exec "normal A "
-      exec "normal $md"
+      exec "normal! A "
+      exec "normal! $md"
     else
       let s:execCommand = "o"
     endif
-    exec "normal ".s:execCommand.s:endCommentTag
+    exec "normal! ".s:execCommand.s:endCommentTag
   endif
 
   " Footer
   if ( g:DoxygenToolkit_blockFooter != "" )
-    exec "normal o".strpart( s:startCommentBlock, 0, 1 )
-    exec "normal A".strpart( s:startCommentBlock, 1 ).g:DoxygenToolkit_blockFooter.s:endCommentBlock
+    exec "normal! o".strpart( s:startCommentBlock, 0, 1 )
+    exec "normal! A".strpart( s:startCommentBlock, 1 ).g:DoxygenToolkit_blockFooter.s:endCommentBlock
   endif
-  exec "normal `d"
+  exec "normal! `d"
 
   call s:RestoreParameters()
   if( s:compactOneLineDoc =~ "yes" && s:endCommentTag != "" )
@@ -848,14 +848,14 @@ endfunction
 " - C++ insert '///' and continue on the same line
 "
 " This function return the insertion mode which should be used for the next
-" call to 'normal'.
+" call to 'normal!'.
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:StartDocumentationBlock()
   " For C++ documentation format we do not need first empty line
   if( s:startCommentTag != s:interCommentTag )
-    "exec "normal O".s:startCommentTag
-    exec "normal O".strpart( s:startCommentTag, 0, 1 )
-    exec "normal A".substitute( strpart( s:startCommentTag, 1 ), "[[:blank:]]*$", "", "" )
+    "exec "normal! O".s:startCommentTag
+    exec "normal! O".strpart( s:startCommentTag, 0, 1 )
+    exec "normal! A".substitute( strpart( s:startCommentTag, 1 ), "[[:blank:]]*$", "", "" )
     let l:insertionMode = "o"
   else
     let l:insertionMode = "O"
